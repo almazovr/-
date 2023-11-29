@@ -1,0 +1,100 @@
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Программа проводник");
+
+        DriveInfo[] drives = DriveInfo.GetDrives();
+
+
+        while (true)
+        {
+
+            Console.WriteLine("Выберите диск:");
+            for (int i = 0; i < drives.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {drives[i].Name} ({drives[i].DriveType})");
+            }
+
+
+            int selectedDriveIndex = ReadMenuSelection(drives.Length);
+            DriveInfo selectedDrive = drives[selectedDriveIndex - 1];
+
+
+            Console.WriteLine($"Информация о диске {selectedDrive.Name}:");
+            Thread.Sleep(1000);
+            Console.WriteLine($"Тип: {selectedDrive.DriveType}");
+            Thread.Sleep(1000);
+            Console.WriteLine($"Объем: {selectedDrive.TotalSize / (1024 * 1024 * 1024)} ГБ");
+            Thread.Sleep(1000);
+            Console.WriteLine($"Свободное место: {selectedDrive.AvailableFreeSpace / (1024 * 1024 * 1024)} ГБ");
+            Thread.Sleep(1000);
+
+
+            ExploreDirectory(selectedDrive.RootDirectory);
+        }
+    }
+
+    static void ExploreDirectory(DirectoryInfo directory)
+    {
+
+        while (true)
+        {
+
+            Console.WriteLine($"Содержимое папки {directory.FullName}:");
+            FileInfo[] files = directory.GetFiles();
+            DirectoryInfo[] subDirectories = directory.GetDirectories();
+
+            for (int i = 0; i < subDirectories.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {subDirectories[i].Name} (Папка)");
+            }
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                Console.WriteLine($"{i + subDirectories.Length + 1}. {files[i].Name} (Файл)");
+            }
+
+
+            int selectedOption = ReadMenuSelection(subDirectories.Length + files.Length + 1);
+            if (selectedOption == 0)
+            {
+
+                if (directory.Parent != null)
+                {
+                    directory = directory.Parent;
+                }
+            }
+            else if (selectedOption <= subDirectories.Length)
+            {
+
+                directory = subDirectories[selectedOption - 1];
+            }
+            else
+            {
+
+                OpenFile(files[selectedOption - subDirectories.Length - 1]);
+            }
+        }
+    }
+
+    static void OpenFile(FileInfo file)
+    {
+        // Здесь можно добавить логику открытия файла на компьютере.
+        Console.WriteLine($"Открытие файла {file.Name}");
+    }
+
+    static int ReadMenuSelection(int maxOption)
+    {
+        int selection;
+        do
+        {
+            Console.Write("Выберите пункт меню: ");
+        } while (!int.TryParse(Console.ReadLine(), out selection) || selection < 0 || selection > maxOption);
+
+        return selection;
+    }
+}
