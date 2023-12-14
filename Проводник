@@ -83,7 +83,7 @@ class Program
 
     static void OpenFile(FileInfo file)
     {
-        // Здесь можно добавить логику открытия файла на компьютере.
+        
         Console.WriteLine($"Открытие файла {file.Name}");
     }
 
